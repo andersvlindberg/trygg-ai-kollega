@@ -1,0 +1,53 @@
+# trygg-ai-kollega: härdade inställningar för Hermes Agent.
+# install/02-wsl.sh slår ihop den här filen med ~/.hermes/config.yaml,
+# och scripts/audit.py kontrollerar att värdena fortfarande gäller.
+# Nyckelnamnen kommer från Hermes säkerhetsdokumentation:
+# https://hermes-agent.nousresearch.com/docs/user-guide/security/
+
+model:
+  provider: custom                      # lokal Ollama, ingen API-kostnad
+  base_url: http://127.0.0.1:11434/v1   # bara localhost, aldrig 0.0.0.0
+  default: hermes3:8b                   # byt med: hermes model
+  context_length: 32768                 # Hermes behöver minst 32K
+
+approvals:
+  mode: manual          # fråga vid VARJE farligt kommando (inte "smart", inte "off")
+  timeout: 300          # inget svar på 5 min = nej
+  cron_mode: deny       # schemalagda körningar får aldrig köra farliga kommandon
+  unattended_mode: deny
+  deny:                 # blockeras alltid, även i YOLO-läge
+    - "curl * | sh"
+    - "curl * | bash"
+    - "wget * | sh"
+    - "* /mnt/c/*"
+    - "ssh *"
+    - "scp *"
+    - "git push --force*"
+    - "rm -rf ~*"
+
+terminal:
+  backend: local        # WSL-datorn är sandlådan; local behåller godkännandena (se SAKERHET.md)
+  env_passthrough: []   # inga hemliga variabler till kommandon
+  docker_forward_env: []
+
+auth:
+  adopt_external_logins: false   # låna inte Claude Code- eller Codex-inloggningar
+
+security:
+  allow_private_urls: false      # skydd mot SSRF (routern, localhost, molnmetadata)
+  allow_lazy_installs: false     # inga paket installeras i smyg
+
+memory:
+  write_approval: true           # du godkänner allt som sparas i minnet
+
+skills:
+  write_approval: true           # du godkänner nya och ändrade skills
+  guard_agent_created: true      # skanna skills som agenten själv skriver
+  external_dirs:
+    - ~/ai-valv/skills           # dina exporterade skills från Claude
+    - ~/trygg-ai-kollega/skills  # handoff- och utvecklingsskills från det här repot
+
+compression:
+  enabled: true                  # sparar VRAM i långa sessioner
+  threshold: 0.5
+  target_ratio: 0.2
