@@ -89,6 +89,15 @@ Hermes kräver minst 32K kontext. En lokal 8B-modell är **betydligt svagare** �
 | Pågående arbete | `HANDOFF.md` |
 | **Följer inte med:** Anthropics inbyggda skills (docx, pptx m.fl.) och Claude Code-moddar | De får bara användas i Claude respektive är UI-tillägg för Claude Code |
 
+## Färdplan
+
+- [x] Härdad Hermes i egen WSL-dator, delat valv, audit och larm
+- [ ] **Fjärrstart och fjärrstyrning:** väck speldatorn från mobilen och låt Claude eller Hermes arbeta på den. Plan: [`docs/fjarrstart.md`](docs/fjarrstart.md)
+- [ ] GPG-kryptering av känsliga filer i valvet och krypterade backuper
+- [ ] Separat larmbot som bara tar emot larm
+- [ ] Överlämningar via en egen gren med granskning innan merge
+- [ ] CI som kör `audit.py` och tester på varje pull request
+
 ## Licens
 
 MIT. Se [LICENSE](LICENSE).
